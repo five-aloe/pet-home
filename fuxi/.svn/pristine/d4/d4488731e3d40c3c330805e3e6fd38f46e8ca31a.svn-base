@@ -1,0 +1,30 @@
+package com.zhonglian.fuxi.service;
+
+import java.math.BigDecimal;
+
+import com.zhonglian.douxin.commom.vo.FundAccountVo;
+import com.zhonglian.douxin.common.bo.FundAccountBo;
+import com.zhonglian.jinjufin.support.entity.Pagination;
+
+/**
+ * 资金帐户
+ * @author lvmeng
+ * @date 2017年8月24日 下午2:50:45 
+ * @Description:
+ */
+public interface FundAccountService {
+
+	
+	Pagination<FundAccountBo> findPage(FundAccountVo param);
+
+	Pagination<FundAccountBo> findAttentionPage(FundAccountVo param);
+
+	int getTotalNumber();
+
+	BigDecimal getTotalUsableMoney();
+
+	BigDecimal getFreezedMoney(); 
+	
+	public BigDecimal getTotalMoney();
+	
+}

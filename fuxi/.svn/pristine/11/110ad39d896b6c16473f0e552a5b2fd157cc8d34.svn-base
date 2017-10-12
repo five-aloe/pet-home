@@ -1,0 +1,6 @@
+restart.include.douxin=/douxin-[A-Za-z0-9\-\.]*
+restart.include.mando=/mando-[A-Za-z0-9\-\.]*
+restart.include.dubbo=/dubbo-[A-Za-z0-9\-\.]*
+restart.include.fuxi=/fuxi-[A-Za-z0-9\-\.]*
+
+

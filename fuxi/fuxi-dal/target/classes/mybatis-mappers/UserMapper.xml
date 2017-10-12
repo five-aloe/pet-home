@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.UserMapper">
+
+	<resultMap id="ListMap" type="User"></resultMap>
+
+	<resultMap id="DetailMap" type="User" extends="ListMap"></resultMap>
+
+
+	<select id="countUser" resultType="java.lang.Integer">
+
+		SELECT
+		COUNT(*)
+		FROM
+		`user`
+		<where>
+			1=1
+			<if test="params.startTime != null">
+				AND createDate &gt;=#{params.startTime}
+			</if>
+			<if test="params.endTime != null">
+				AND createDate &lt;=#{params.endTime}
+			</if>
+			<if test="params.mobile !=null and params.mobile !=''">
+				AND mobile LIKE CONCAT('%',#{params.mobile},'%')
+			</if>
+			<if test="params.name != null and params.name !=''">
+				AND `name` LIKE CONCAT('%', #{params.name} ,'%')
+			</if>
+			<if test="params.type != null and params.type !=''">
+				AND `type` =#{params.type}
+			</if>
+			<if test="params.source !=null and params.source !=''">
+				AND `source` LIKE CONCAT('%',#{params.source},'%')
+			</if>
+
+		</where>
+
+	</select>
+
+	<select id="findUserFuXiBo" resultType="com.zhonglian.douxin.common.bo.UserFuXiBo">
+		SELECT
+		`createDate`,
+		`name`,
+		`mobile`,
+		`type`,
+		`source`,
+		`authenticated`
+		FROM
+		`user`
+		<where>
+			1=1
+			<if test="params.startTime != null">
+				AND createDate &gt;=#{params.startTime}
+			</if>
+			<if test="params.endTime != null">
+				AND createDate &lt;=#{params.endTime}
+			</if>
+			<if test="params.mobile !=null and params.mobile !=''">
+				AND mobile LIKE CONCAT('%',#{params.mobile},'%')
+			</if>
+			<if test="params.name != null and params.name !=''">
+				AND `name` LIKE CONCAT('%', #{params.name} ,'%')
+			</if>
+			<if test="params.type != null and params.type !=''">
+				AND `type` =#{params.type}
+			</if>
+			<if test="params.source !=null and params.source !=''">
+				AND `source` LIKE CONCAT('%',#{params.source},'%')
+			</if>
+		</where>
+		order by createDate desc
+		LIMIT
+		#{params.firstResult},#{params.maxResults}
+
+	</select>
+
+	<update id="updateUser">
+		UPDATE user SET
+		<if test="password !=null and password !=''">
+			password =#{password},
+		</if>
+		<if test="companyRemark !=null and companyRemark !=''">
+			remark =#{companyRemark},
+		</if>
+		modifyDate = NOW()
+		<where>
+			mobile = #{mobile}
+		</where>
+	</update>
+
+
+</mapper>

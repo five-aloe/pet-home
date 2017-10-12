@@ -1,0 +1,51 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.web.controller;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zhonglian.douxin.commom.vo.FundAccountVo;
+import com.zhonglian.douxin.commom.vo.UserAddEnterpriseVo;
+import com.zhonglian.douxin.commom.vo.UserAddVo;
+import com.zhonglian.douxin.common.enums.UserTypeEnums;
+import com.zhonglian.fuxi.service.FundAccountService;
+import com.zhonglian.fuxi.service.UserService;
+import com.zhonglian.jinjufin.support.entity.JsonResult;
+import com.zhonglian.jinjufin.support.exception.ResponseExceptionMessage;
+
+/**
+ * @author lvmeng
+ *
+ */
+@Controller
+@RequestMapping("fundAccount")
+public class FundAccountController {
+
+	private static final Logger logger = LoggerFactory.getLogger(FundAccountController.class);
+
+	@Resource
+	private FundAccountService fundAccountService;
+
+
+	@RequestMapping("findPage")
+	@ResponseBody
+	public JsonResult findPage(FundAccountVo param) {
+		try {
+
+			return JsonResult.buildSuccessResult(fundAccountService.findPage(param));
+		} catch (Exception e) {
+			String mgs = "用户添加失败";
+			logger.error(mgs, e);
+			return JsonResult.buildFailedResult(mgs);
+		}
+	}
+
+	
+}

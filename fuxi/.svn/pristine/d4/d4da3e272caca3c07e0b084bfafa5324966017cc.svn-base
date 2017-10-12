@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.AccountRecordMapper">
+
+
+
+
+	<select id="CountAccountRecord" resultType="java.lang.Integer">
+
+		SELECT
+		COUNT(*)
+		FROM
+		account_record ar
+		LEFT JOIN account ac ON
+		ar.accountNo = ac.`no`
+		LEFT JOIN `user` u ON u.id = ac.userId
+		<where>
+			ar.type =#{type}
+			<if test="params.startTime != null">
+				AND ar.createDate &gt;=#{params.startTime}
+			</if>
+			<if test="params.endTime != null">
+				AND ar.createDate &lt;=#{params.endTime}
+			</if>
+			<if test="params.remark !=null and params.remark !=''">
+				AND ar.remark LIKE CONCAT('%',#{params.remark},'%')
+			</if>
+			<if
+				test="params.changesAmountOne != null and params.changesAmountOne !=''">
+				AND ar.money &gt;=#{params.changesAmountOne}
+			</if>
+			<if
+				test="params.changesAmountTwo != null and params.changesAmountTwo !=''">
+				AND ar.money &lt;=#{params.changesAmountTwo}
+			</if>
+			AND ar.accountNo =#{params.accountNo}
+
+		</where>
+
+	</select>
+
+	<select id="findAccountRecordList" resultType="com.zhonglian.douxin.common.bo.AccountRecordBo">
+		SELECT
+		ar.*,
+		u.`name`,
+		u.mobile
+		FROM
+		account_record ar
+		LEFT JOIN account ac
+		ON ar.accountNo = ac.`no`
+		LEFT JOIN `user` u ON u.id = ac.userId
+		<where>
+			ar。type =#{type}
+			<if test="params.startTime != null">
+				AND ar。createDate &gt;=#{params.startTime}
+			</if>
+			<if test="params.endTime != null">
+				AND ar。createDate &lt;=#{params.endTime}
+			</if>
+			<if test="params.remark !=null and params.remark !=''">
+				AND ar。remark LIKE CONCAT('%',#{params.remark},'%')
+			</if>
+			<if
+				test="params.changesAmountOne != null and params.changesAmountOne !=''">
+				AND ar。money &gt;=#{params.changesAmountOne}
+			</if>
+			<if
+				test="params.changesAmountTwo != null and params.changesAmountTwo !=''">
+				AND ar。money &lt;=#{params.changesAmountTwo}
+			</if>
+			AND ar.accountNo =#{params.accountNo}
+		</where>
+		order by ar。createDate desc
+		<if test="params。export ==null or params。export == false" > <!-- 是否分页查询，导出时无须分页 -->
+		LIMIT
+		#{params.firstResult},#{params.maxResults}
+		</if>
+
+	</select>
+
+</mapper>

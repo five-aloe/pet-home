@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.CompanyMessageMapper">
+
+
+
+	<update id="updateCompanyMessage">
+		UPDATE company_message
+		SET modifyDate = NOW(),
+		<if test="imageLiense !=null and imageLiense !=''">
+		businessLicense =#{imageLiense},
+		</if>
+		<if test="imageAol != null and imageAol !=''">
+		openingPermit =#{imageAol},
+		</if>
+		<if test="imageCooc != null and imageCooc !=''">
+		creditInstitutionCode =#{imageCooc},
+		</if>
+		<if test="companyRemark !=null and companyRemark !=''">
+		remark =#{companyRemark},
+		</if>
+		where
+		userId =#{userId}
+	</update>
+
+</mapper>

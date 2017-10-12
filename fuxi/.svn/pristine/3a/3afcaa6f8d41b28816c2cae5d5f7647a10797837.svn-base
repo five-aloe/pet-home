@@ -1,0 +1,35 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.service;
+
+import com.zhonglian.douxin.commom.vo.UserAddEnterpriseVo;
+import com.zhonglian.douxin.commom.vo.UserAddVo;
+import com.zhonglian.douxin.common.entity.User;
+
+/**
+ * @author zhangshun
+ *
+ */
+public interface UserService {
+	
+	/**
+	 * 个人账户代注册
+	 * 
+	 *@author zhangshun
+	 * @date 2017年8月23日 下午12:06:44
+	 */
+	void addUser(UserAddVo userAddVo);
+	/**
+	 * 企业账户注册
+	 * 
+	 * @date 2017年8月23日 下午12:08:13
+	 */
+	void addCompanyUser(UserAddEnterpriseVo userAddEnterpriseVo);
+	
+	/**
+	 * 根据手机号查询
+	 */
+	public User findUserMobile(String mobile);
+
+}

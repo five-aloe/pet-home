@@ -1,0 +1,21 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.dal.mapper;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.zhonglian.douxin.common.entity.SysUser;
+
+/**
+ * @author zyf
+ *
+ */
+public interface SysUserMapper {
+
+	
+	@Select("SELECT * FROM sys_user WHERE username = #{username}")
+	public SysUser findByUsername(@Param("username") String username);
+	
+}

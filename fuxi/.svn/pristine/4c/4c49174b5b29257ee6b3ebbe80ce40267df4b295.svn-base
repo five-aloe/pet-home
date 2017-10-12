@@ -1,0 +1,78 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.dal.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.zhonglian.douxin.commom.vo.UserAddEnterpriseVo;
+import com.zhonglian.douxin.commom.vo.UserVo;
+import com.zhonglian.douxin.common.bo.UserFuXiBo;
+import com.zhonglian.douxin.common.entity.User;
+import com.zhonglian.fuxi.dal.support.Mapper;
+
+/**
+ * @author zhangshun
+ *
+ */
+public interface UserMapper extends Mapper<User>{
+	
+	
+	/**根据用户id查询
+	 * 
+	 */
+	@Select("SELECT *FROM `user` WHERE id =#{id}")
+	User findUser(@Param("id") Long id);
+	
+	/**
+	 * 根据手机号查询
+	 * @param  mobile 
+	 *          手机号
+	 */
+	@Select("SELECT *FROM `user` WHERE mobile =#{mobile}")
+	User findUserMobile(@Param("mobile") String mobile);
+	
+	/**
+	 * 查询用户
+	 * 
+	 * @param userName
+	 *            用户名
+	 * @return
+	 */
+	@Select("SELECT * FROM `user` WHERE userName = #{userName}")
+	public User findByUserName(@Param("userName") String userName);
+	
+	/**
+	 * 根据身份证号查询
+	 * @param idCard 
+	 *         身份证号
+	 */
+	@Select("SELECT *FROM `user` WHERE idCard =#{idCard}")
+	User findUserIdCard(@Param("idCard") String idCard);
+	
+	/**
+	 * 查询账户注册总数
+	 * @param params
+	 */
+	int countUser(@Param("params") UserVo params);
+	
+	/**
+	 * 账户注册分页查询
+	 * 
+	 *@param params
+	 * 
+	 *
+	 */
+	List<UserFuXiBo> findUserFuXiBo(@Param("params") UserVo params);
+	
+	/**
+	 * 更新账户信息
+	 * @param password
+	 * @param mobile 手机号
+	 */
+	void updateUser(@Param("password")String password, @Param("mobile")String mobile);
+
+}

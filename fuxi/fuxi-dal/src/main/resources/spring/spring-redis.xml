@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/cache
+		http://www.springframework.org/schema/cache/spring-cache.xsd"
+       default-lazy-init="true">
+
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="5"/>
+        <property name="maxTotal" value="30"/>
+        <property name="maxWaitMillis" value="1000"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnFactory"/>
+        <property name="keySerializer">
+            <bean
+                    class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+        </property>
+    </bean>
+
+    <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="jedisConnFactory"/>
+    </bean>
+
+    <cache:annotation-driven key-generator="cacheKeyGenerator"/>
+
+    <bean id="cacheKeyGenerator" class="com.zhonglian.mando.support.cache.RedisCacheKeyGenerator"/>
+
+    <!-- 默认JEDIS ConnFactory-->
+    <bean id="jedisConnFactory" primary="true"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:host-name="${spring.redis.host}" p:port="${spring.redis.port}" p:use-pool="true"
+          p:pool-config-ref="poolConfig"
+          p:password="${spring.redis.password}"
+          p:database="0"/>
+
+</beans>

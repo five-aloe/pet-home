@@ -1,0 +1,37 @@
+/**
+ * @author
+ */
+package com.zhonglian.fuxi.service.impl;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.zhonglian.douxin.commom.vo.AccountRecordVo;
+import com.zhonglian.douxin.common.bo.AccountRecordBo;
+import com.zhonglian.douxin.common.entity.AccountRecord;
+import com.zhonglian.douxin.common.enums.AccountRecordTypeEnums;
+import com.zhonglian.fuxi.dal.mapper.AccountRecordMapper;
+import com.zhonglian.fuxi.service.AccountRecordService;
+import com.zhonglian.jinjufin.support.entity.Pagination;
+
+/**
+ * @author zhangshun
+ *
+ * 
+ */
+@Service
+public class AccountRecordServiceImpl implements AccountRecordService{
+
+	@Resource
+	private AccountRecordMapper mapper; 
+	
+	@Override
+	public Pagination<AccountRecordBo> findAccountRecord(AccountRecordVo params, AccountRecordTypeEnums type) {
+		Pagination<AccountRecordBo> pagination = new Pagination<>(params.getPage(), params.getPageSize());
+		pagination.setTotal(mapper.CountAccountRecord(params, type));
+		pagination.setData(mapper.findAccountRecordList(params, type));
+		return pagination;
+	}
+
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.UserMapper">
+
+
+	<select id="countUser" resultType="java.lang.Integer">
+
+		SELECT
+		COUNT(*)
+		FROM
+		`user`
+		<where>
+			1=1
+			<if test="startTime != null and startTime !=''">
+				AND createDate &gt;=# {startTime}
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND createDate &lt;= #{endTime}
+			</if>
+			<if test="mobile !=null and mobile !=''">
+				AND mobile LIKE CONCAT('%',#{mobile},'%')
+			</if>
+			<if test="name != null and name !=''">
+				AND name LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="type != null and type != ''">
+				AND type =# {type}
+			</if>
+			<if test="source !=null and source != ''">
+				AND source LIKE CONCAT('%',#{source},'%')
+			</if>
+
+		</where>
+
+	</select>
+
+	<select id="findUser" resultType="com.zhonglian.douxin.common.bo.UserFuXiBo">
+		SELECT
+		`createDate`,
+		`name`,
+		`mobile`,
+		`type`,
+		`source`,
+		`authenticated`
+		FROM
+		`user`
+		<where>
+			1=1
+			<if test="startTime != null and startTime !=''">
+				AND createDate &gt;=# {startTime}
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND createDate &lt;= #{endTime}
+			</if>
+			<if test="mobile !=null and mobile !=''">
+				AND mobile LIKE CONCAT('%',#{mobile},'%')
+			</if>
+			<if test="name != null and name !=''">
+				AND name LIKE CONCAT('%',#{name},'%')
+			</if>
+			<if test="type != null and type != ''">
+				AND type =# {type}
+			</if>
+			<if test="source !=null and source != ''">
+				AND source LIKE CONCAT('%',#{source},'%')
+			</if>
+		</where>
+		order by createDate desc
+		LIMIT #{firstResult},#{maxResults}
+
+	</select>
+
+
+</mapper>

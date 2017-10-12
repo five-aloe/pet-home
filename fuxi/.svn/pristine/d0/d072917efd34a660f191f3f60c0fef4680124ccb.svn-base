@@ -1,0 +1,40 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.biz;
+
+import javax.annotation.Resource;
+
+import org.junit.Test;
+
+import com.zhonglian.douxin.commom.vo.UserAddVo;
+import com.zhonglian.douxin.common.enums.UserTypeEnums;
+import com.zhonglian.fuxi.service.UserService;
+
+/**
+ * 用户注册测试
+ * @author zhangshun
+ * 
+ *
+ */
+public class UserServiceImplTest  extends BaseTestCase{
+	
+	/**
+	 * 
+	 *
+	 * @date 2017年8月23日 下午2:33:49
+	 */
+	@Resource
+	private UserService userService;
+
+	
+	@Test
+	public void test() {
+		UserAddVo userAddVo =new UserAddVo();
+		userAddVo.setType(UserTypeEnums.INDIVIDUAL_ACCOUNT);
+		userAddVo.setMobile("15236001290");
+		userAddVo.setPassword("123456");
+		userAddVo.setRealname("张顺");
+		userService.addUser(userAddVo);
+	}
+}

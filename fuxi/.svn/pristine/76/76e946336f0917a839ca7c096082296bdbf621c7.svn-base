@@ -1,0 +1,278 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.service.impl;
+
+import static com.zhonglian.jinjufin.support.utils.CommonUtils.isMobile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.alibaba.dubbo.common.utils.Assert;
+import com.zhonglian.douxin.commom.vo.UserAddEnterpriseVo;
+import com.zhonglian.douxin.commom.vo.UserAddVo;
+import com.zhonglian.douxin.commom.vo.UserVo;
+import com.zhonglian.douxin.common.bo.UserFuXiBo;
+import com.zhonglian.douxin.common.bo.UserMobileBo;
+import com.zhonglian.douxin.common.entity.Account;
+import com.zhonglian.douxin.common.entity.CompanyMessage;
+import com.zhonglian.douxin.common.entity.User;
+import com.zhonglian.douxin.common.enums.AccountRoleEnums;
+import com.zhonglian.douxin.common.enums.RegistrationErrorEnums;
+import com.zhonglian.douxin.common.enums.SourceEnums;
+import com.zhonglian.douxin.common.enums.UserTypeEnums;
+import com.zhonglian.douxin.service.api.AccountServiceApi;
+import com.zhonglian.fuxi.dal.mapper.CompanyMessageMapper;
+import com.zhonglian.fuxi.dal.mapper.UserMapper;
+import com.zhonglian.fuxi.service.CompanyMessageService;
+import com.zhonglian.fuxi.service.UserService;
+import com.zhonglian.jinjufin.support.entity.Pagination;
+import com.zhonglian.jinjufin.support.utils.CommonUtils;
+import com.zhonglian.jinjufin.support.utils.IdcardUtils;
+import com.zhonglian.jinjufin.support.utils.MandoAssert;
+
+/**
+ * @author zhangshun
+ * 
+ *
+ */
+@Service
+public class UserServiceimpl implements UserService {
+
+	@Resource
+	private UserMapper mapper;
+
+	@Resource
+	private CompanyMessageMapper companyMessageMapper;
+
+	@Resource
+	private AccountServiceApi accountServiceApi;
+
+	@Resource
+	private CompanyMessageService companyMessageService;
+
+	@Override
+	@Transactional
+	public void addUser(UserAddVo userAddVo) {
+		Assert.notNull(userAddVo.getIdCard(), "身份证号不能为空");
+		MandoAssert.isTrue(userAddVo.getAccountRole().size() > 0, "资金账户角色类型不能为空");
+		Assert.notNull(userAddVo.getMobile(), "手机号不能为空");
+		Assert.notNull(userAddVo.getPassword(), "登陆密码不能为空");
+		Assert.notNull(userAddVo.getRealname(), "用户名称不能为空");
+		MandoAssert.isTrue(IdcardUtils.validateCard(userAddVo.getIdCard()), "身份证号码错误");
+		MandoAssert.isTrue(isMobile(userAddVo.getMobile()), RegistrationErrorEnums.REGIST_0001.getText());
+		MandoAssert.isTrue(mapper.findUserMobile(userAddVo.getMobile()) == null, "手机号码已注册");
+		MandoAssert.isTrue(mapper.findUserIdCard(userAddVo.getIdCard()) == null, "身份证号码已注册");
+		User user = new User();
+		user.setMobile(userAddVo.getMobile());
+		user.setPassword(CommonUtils.encryption(userAddVo.getPassword()));
+		user.setName(userAddVo.getRealname());
+		user.setIdCard(userAddVo.getIdCard());
+		user.setType(userAddVo.getType());
+		user.setSource(SourceEnums.FUXI);
+		user.setAuthenticated(true);
+		user.setRemark(userAddVo.getRemark());
+		mapper.insert(user);
+		// 开通个人资金账户
+		this.openAcount(userAddVo.getMobile(), userAddVo.getAccountRole(), userAddVo.getType(), SourceEnums.FUXI);
+	}
+
+	@Override
+	@Transactional
+	public void addCompanyUser(UserAddEnterpriseVo userAddEnterpriseVo) {
+		Assert.notNull(userAddEnterpriseVo.getCorporationCard(), "法人身份证号不能为空");
+		MandoAssert.isTrue(userAddEnterpriseVo.getCompanyRole().size() > 0, "资金账户角色类型不能为空");
+		Assert.notNull(userAddEnterpriseVo.getCompanyMobile(), "手机号不能为空");
+		Assert.notNull(userAddEnterpriseVo.getCompanyPassword(), "登陆密码不能为空");
+		Assert.notNull(userAddEnterpriseVo.getCompanyName(), "企业名称不能为空");
+		Assert.notNull(userAddEnterpriseVo.getCreditCode(), "统一社会信用代码不能为空");
+		Assert.notNull(userAddEnterpriseVo.getCorporation(), "企业法人不能为空");
+		MandoAssert.isTrue(IdcardUtils.validateCard(userAddEnterpriseVo.getCorporationCard()), "身份证号码错误");
+		MandoAssert.isTrue(isMobile(userAddEnterpriseVo.getCompanyMobile()),
+				RegistrationErrorEnums.REGIST_0001.getText());
+		MandoAssert.isTrue(mapper.findUserMobile(userAddEnterpriseVo.getCompanyMobile()) == null, "手机号码已注册");
+		// 企业用户注册
+		User user = new User();
+		user.setType(userAddEnterpriseVo.getType());
+		user.setMobile(userAddEnterpriseVo.getCompanyMobile());
+		user.setPassword(CommonUtils.encryption(userAddEnterpriseVo.getCompanyPassword()));
+		user.setName(userAddEnterpriseVo.getCompanyName());
+		user.setIdCard(userAddEnterpriseVo.getCreditCode());
+		user.setAuthenticated(true);
+		user.setSource(SourceEnums.FUXI);
+		user.setRemark(userAddEnterpriseVo.getCompanyRemark());
+		mapper.insert(user);
+		// 企业详细信息添加
+		this.addCompany(userAddEnterpriseVo);
+		// 开通企业资金账户
+		this.openAcount(userAddEnterpriseVo.getCompanyMobile(), userAddEnterpriseVo.getCompanyRole(),
+				userAddEnterpriseVo.getType(), SourceEnums.FUXI);
+
+	}
+
+	@Transactional
+	private void addCompany(UserAddEnterpriseVo userAddEnterpriseVo) {
+		CompanyMessage companyMessage = new CompanyMessage();
+		companyMessage.setUserId(mapper.findUserMobile(userAddEnterpriseVo.getCompanyMobile()).getId());
+		companyMessage.setName(userAddEnterpriseVo.getCorporation());
+		companyMessage.setIdCard(userAddEnterpriseVo.getCorporationCard());
+		companyMessage.setCompanyName(userAddEnterpriseVo.getCompanyName());
+		companyMessage.setSocialCreditCode(userAddEnterpriseVo.getCreditCode());
+		companyMessage.setIdCardUp(userAddEnterpriseVo.getImageIdCardFront());
+		companyMessage.setIdCardDown(userAddEnterpriseVo.getImageIdCardContrary());
+		companyMessage.setBusinessLicense(userAddEnterpriseVo.getImageLiense());
+		companyMessage.setOpeningPermit(userAddEnterpriseVo.getImageAol());
+		companyMessage.setCreditInstitutionCode(userAddEnterpriseVo.getImageCooc());
+		companyMessage.setRemark(userAddEnterpriseVo.getCompanyRemark());
+		companyMessageMapper.insert(companyMessage);
+	}
+
+	@Override
+	public UserMobileBo findUserMobile(String mobile) {
+		List<AccountRoleEnums> list = new ArrayList<>();
+		UserMobileBo userMobileBo = new UserMobileBo();
+		User user = mapper.findUserMobile(mobile);
+		MandoAssert.isTrue(user != null, "账户信息查询失败");
+		List<Account> acountList = accountServiceApi.findAccountList(user.getId());
+		if (acountList.size() > 0) {
+			for (Account account : acountList) {
+				list.add(account.getRole());
+			}
+
+		}
+		// 个人账户
+		if (user.getType().equals(UserTypeEnums.INDIVIDUAL)) {
+			userMobileBo.setType(user.getType());
+			userMobileBo.setName(user.getName());
+			userMobileBo.setIdCard(user.getIdCard());
+			userMobileBo.setRemark(user.getRemark());
+			userMobileBo.setMobile(user.getMobile());
+			userMobileBo.setAccountRole(list);
+		}
+		// 企业账户
+		if (user.getType().equals(UserTypeEnums.COMPANY)) {
+			MandoAssert.isTrue(acountList.size() > 0, "资金账户不存在");
+			CompanyMessage companyMessage = companyMessageService.findCompanyMessage(user.getId());
+			userMobileBo.setType(user.getType());
+			userMobileBo.setMobile(user.getMobile());
+			userMobileBo.setAccountRole(list);
+			userMobileBo.setIdCard(companyMessage.getSocialCreditCode());
+			userMobileBo.setName(companyMessage.getCompanyName());
+			userMobileBo.setRemark(user.getRemark());
+			userMobileBo.setCorporation(companyMessage.getName());
+			userMobileBo.setCorporationCard(companyMessage.getIdCard());
+			userMobileBo.setIdCardUp(companyMessage.getIdCardUp());
+			userMobileBo.setIdCardDown(companyMessage.getIdCardDown());
+			userMobileBo.setBusinessLicense(companyMessage.getBusinessLicense());
+			userMobileBo.setOpeningPermit(companyMessage.getOpeningPermit());
+			userMobileBo.setCreditInstitutionCode(companyMessage.getCreditInstitutionCode());
+		}
+		return userMobileBo;
+	}
+
+	// 开通资金账户
+	private void openAcount(String mobile, List<AccountRoleEnums> acountRoleList, UserTypeEnums type,
+			SourceEnums source) {
+		User user = mapper.findUserMobile(mobile);
+		MandoAssert.isTrue(user != null, "账户注册失败");
+		for (int i = 0; i < acountRoleList.size(); i++) {
+			accountServiceApi.createAccount(user.getId(), acountRoleList.get(i), type, source);
+		}
+	}
+
+	@Override
+	public Pagination<UserFuXiBo> findUser(UserVo params) {
+		Pagination<UserFuXiBo> pagination = new Pagination<>(params.getPage(), params.getPageSize());
+		pagination.setTotal(mapper.countUser(params));
+		pagination.setData(mapper.findUserFuXiBo(params));
+		return pagination;
+	}
+
+	@Override
+	@Transactional
+	public void updateUser(UserAddEnterpriseVo userAddEnterpriseVo, UserAddVo userAddVo) {
+		MandoAssert.notNull(userAddEnterpriseVo.getType(), "账户类型不能为空");
+		MandoAssert.notNull(userAddVo.getType(), "账户类型不能为空");
+		// 个人账户信息更改
+		if (userAddVo.getType().equals(UserTypeEnums.INDIVIDUAL)) {
+			if (userAddVo.getPassword() != null && userAddVo.getPassword() != ""
+					|| userAddVo.getRemark() != null && userAddVo.getRemark() != "") {
+				mapper.updateUser(CommonUtils.encryption(userAddVo.getPassword()), userAddVo.getMobile(),
+						userAddVo.getRemark());
+			}
+			User user = mapper.findUserMobile(userAddVo.getMobile());
+			MandoAssert.isTrue(user != null, "账户信息不存在");
+			if (userAddVo.getAccountRole().size() > 0) {
+				List<Account> acountList = accountServiceApi.findAccountList(user.getId());
+				if (acountList != null && acountList.size() > 0) {
+					this.updateAcount(acountList, userAddVo.getAccountRole(), userAddVo.getMobile(),
+							userAddVo.getType());
+				} else {
+					// 开通资金账户
+					this.openAcount(userAddVo.getMobile(), userAddVo.getAccountRole(), userAddVo.getType(),
+							SourceEnums.FUXI);
+				}
+			}
+		}
+		// 企业账户信息更改
+		if (userAddEnterpriseVo.getType().equals(UserTypeEnums.COMPANY)) {
+			MandoAssert.isTrue(userAddEnterpriseVo.getCompanyRole().size() > 0, "企业账户角色类型不存在");
+			if (userAddEnterpriseVo.getCompanyPassword() != null && userAddEnterpriseVo.getCompanyPassword() != ""
+					|| userAddEnterpriseVo.getCompanyRemark() != null && userAddEnterpriseVo.getCompanyRemark() != "") {
+				mapper.updateUser(CommonUtils.encryption(userAddEnterpriseVo.getCompanyPassword()),
+						userAddEnterpriseVo.getCompanyMobile(), userAddEnterpriseVo.getCompanyRemark());
+			}
+			User user = mapper.findUserMobile(userAddEnterpriseVo.getCompanyMobile());
+			MandoAssert.isTrue(user != null, "账户信息不存在");
+			List<Account> acountList = accountServiceApi.findAccountList(user.getId());
+			MandoAssert.isTrue(acountList.size() > 0, "资金账户不存在");
+			if (acountList != null && acountList.size() > 0) {
+				this.updateAcount(acountList, userAddEnterpriseVo.getCompanyRole(),
+						userAddEnterpriseVo.getCompanyMobile(), userAddEnterpriseVo.getType());
+			}
+			// 企业信息更新
+			companyMessageMapper.updateCompanyMessage(userAddEnterpriseVo, user.getId());
+
+		}
+	}
+
+	/** 资金账户角色更新 */
+	@Transactional
+	private void updateAcount(List<Account> acountList, List<AccountRoleEnums> companyRole, String mobile,
+			UserTypeEnums type) {
+		ArrayList<AccountRoleEnums> list = new ArrayList<>();
+		Long userId = null;
+		// 资金账户角色删除
+		for (Account acount : acountList) {
+			userId = acount.getUserId();
+			list.add(acount.getRole());
+		}
+		list.removeAll(companyRole);
+		if (list.size() > 0) {
+			for (AccountRoleEnums str : list) {
+				Account aount = accountServiceApi.findByUserIdAndRole(userId, str);
+				if (aount != null) {
+					// 删除账户
+					accountServiceApi.delectAccountByNo(aount.getNo());
+				}
+			}
+		}
+		list.clear();
+		// 资金账户角色添加
+		for (Account acount : acountList) {
+			userId = acount.getUserId();
+			list.add(acount.getRole());
+		}
+		companyRole.removeAll(list);
+		if (companyRole.size() > 0) {
+			// 开通资金账户
+			this.openAcount(mobile, companyRole, type, SourceEnums.FUXI);
+		}
+	}
+
+}

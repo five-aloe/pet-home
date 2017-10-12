@@ -1,0 +1,15 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.dal.mapper;
+
+import com.zhonglian.douxin.common.entity.CompanyMessage;
+import com.zhonglian.fuxi.dal.support.Mapper;
+
+/**
+ * @author zhangshun
+ *
+ */
+public interface CompanyMessageMapper extends Mapper<CompanyMessage> {
+
+}

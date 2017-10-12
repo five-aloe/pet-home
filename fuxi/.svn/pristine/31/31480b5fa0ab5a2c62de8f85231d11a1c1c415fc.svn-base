@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.service.impl;
+
+import com.zhonglian.douxin.common.entity.SysUser;
+import com.zhonglian.fuxi.dal.mapper.SysUserMapper;
+import com.zhonglian.fuxi.service.SysUserService;
+
+/**
+ * @author zyf
+ *
+ */
+public class SysUserServiceImpl implements SysUserService {
+
+	private SysUserMapper sysUserMapper;
+	
+	@Override
+	public SysUser findByUsername(String username) {
+		return sysUserMapper.findByUsername(username);
+	}
+
+}

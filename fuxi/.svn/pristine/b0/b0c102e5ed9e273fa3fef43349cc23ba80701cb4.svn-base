@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.AccountRecordMapper">
+
+	
+
+
+	<select id="CountAccountRecord" resultType="java.lang.Integer">
+
+		SELECT
+		COUNT(*)
+		FROM
+		`account_record`
+		<where>
+			type =#{type}
+			<if test="params.startTime != null">
+				AND createDate &gt;=#{params.startTime}
+			</if>
+			<if test="params.endTime != null">
+				AND createDate &lt;=#{params.endTime}
+			</if>
+			<if test="params.remark !=null and params.remark !=''">
+				AND remark LIKE CONCAT('%',#{params.remark},'%')
+			</if>
+			<if test="params.changesAmountOne != null and params.changesAmountOne !=''">
+				AND money &gt;=#{params.changesAmountOne}
+			</if>
+			<if test="params.changesAmountTwo != null and params.changesAmountTwo !=''">
+				AND money &lt;=#{params.changesAmountTwo}
+			</if>
+
+		</where>
+
+	</select>
+
+	<select id="findAccountRecordList" resultType="com.zhonglian.douxin.common.bo.AccountRecordBo">
+		SELECT
+		*
+		FROM
+		`account_record`
+		<where>
+			type =#{type}
+			<if test="params.startTime != null">
+				AND createDate &gt;=#{params.startTime}
+			</if>
+			<if test="params.endTime != null">
+				AND createDate &lt;=#{params.endTime}
+			</if>
+			<if test="params.remark !=null and params.remark !=''">
+				AND remark LIKE CONCAT('%',#{params.remark},'%')
+			</if>
+			<if test="params.changesAmountOne != null and params.changesAmountOne !=''">
+				AND money &gt;=#{params.changesAmountOne}
+			</if>
+			<if test="params.changesAmountTwo != null and params.changesAmountTwo !=''">
+				AND money &lt;=#{params.changesAmountTwo}
+			</if>
+		</where>
+		order by createDate desc
+		LIMIT
+		#{params.firstResult},#{params.maxResults}
+
+	</select>
+
+</mapper>

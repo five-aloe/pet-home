@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.FundsCommandMapper">
+
+	
+	<sql id="anyFindWhere">
+	
+		<where>
+			<if test="basic.beginTime!=null">
+				cmd.createDate BETWEEN #{basic.beginTime} AND #{basic.endTime}
+			</if>
+			<if test="cmd.no!=null">
+				cmd.no = #{cmd.no}
+			</if>
+			<if test="cmd.orderNo!=null">
+				cmd.orderNo = #{cmd.orderNo}
+			</if>
+			<if test="cmd.payerAccountNo!=null">
+				cmd.payerAccountNo = #{cmd.payerAccountNo}
+			</if>
+			<if test="cmd.payeeAccountNo!=null">
+				cmd.payeeAccountNo = #{cmd.payeeAccountNo}
+			</if>
+			<if test="cmd.state!=null">
+				cmd.state = #{cmd.state}
+			</if>
+			<if test="cmd.accountingType!=null">
+				cmd.accountingType = #{cmd.accountingType}
+			</if>
+			<if test="cmd.type">
+				cmd.type = #{cmd.type}
+			</if>
+			<if test="cmd.remark">
+				cmd.remark = #{cmd.remark}
+			</if>
+		</where>
+	
+	</sql>
+	
+	<!-- 
+		资金指令综合查询
+		@author zyf
+	 -->
+	<select id="countFind" resultType="int">
+		
+		SELECT count(*) 
+		FROM funds_command cmd
+		<include refid="anyFindWhere"></include>		
+	</select>
+
+	<!-- 
+		资金指令综合查询
+		@author zyf
+	 -->
+	<select id="find" resultType="FundsCommand">
+		
+		SELECT * 
+		FROM funds_command cmd
+		<include refid="anyFindWhere"></include>
+		ORDER BY id desc
+		LIMIT #{basic.firstResult}, #{basic.maxResults}
+		
+	</select>
+
+</mapper>

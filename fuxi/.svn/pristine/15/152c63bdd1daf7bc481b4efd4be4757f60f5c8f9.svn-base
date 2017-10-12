@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- MyBatis 配置 -->
+    <settings>    
+        <setting name="cacheEnabled" value="false"/>
+        <setting name="lazyLoadingEnabled" value="false"/>
+        <setting name="multipleResultSetsEnabled" value=""/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="autoMappingBehavior" value="FULL"/>
+        <setting name="defaultExecutorType" value="REUSE"/>
+        <setting name="defaultStatementTimeout" value="25"/>
+        <setting name="safeRowBoundsEnabled" value="false"/>
+        <setting name="mapUnderscoreToCamelCase" value="false"/>
+        <setting name="localCacheScope" value="SESSION"/>
+        <setting name="jdbcTypeForNull" value="OTHER"/>
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+    
+    <typeHandlers>
+    	<!-- 注册类型处理器 -->
+    	<package name="com.zhonglian.jinjufin.mybatis.type.handle" />
+    </typeHandlers>
+    
+</configuration>

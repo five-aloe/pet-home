@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jms="http://www.springframework.org/schema/jms" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       	http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+	
+	<!-- 监听注解支持 -->  
+    <jms:annotation-driven/> 
+	
+
+	<!-- ConnectionFactory Definition -->
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${spring.activemq.broker-url}" />
+		<property name="useAsyncSend" value="true" />
+		
+		<property name="trustAllPackages" value="true"></property>
+	</bean>
+	
+	<!-- 链接池设置 -->
+	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory" ref="jmsConnectionFactory" />
+		<!-- Session缓存数量 -->
+		<property name="sessionCacheSize" value="10" />
+	
+	</bean>
+
+
+	<!-- JmsTemplate Definition -->
+	<bean id="topicJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="cachingConnectionFactory" />
+		<!-- 订阅发布模式 -->
+		<property name="pubSubDomain" value="true" />
+		<property name="receiveTimeout" value="3000" />
+	</bean>
+
+
+	<bean id="queueJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="cachingConnectionFactory" />
+		<property name="pubSubDomain" value="false" />
+		<property name="receiveTimeout" value="3000" />
+	</bean>
+ 
+ 	<bean id="jmsListenerContainerFactory" class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
+        <property name="connectionFactory" ref="jmsConnectionFactory" />
+        <property name="concurrency" value="3-50" />
+    </bean>
+ 
+	
+</beans>

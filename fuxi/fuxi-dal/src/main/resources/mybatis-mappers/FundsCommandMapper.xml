@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zhonglian.fuxi.dal.mapper.FundsCommandMapper">
+
+	
+	<sql id="anyFindWhere">
+	
+		<where >
+			1=1
+			<if test="basic.beginTime!=null">
+				AND cmd.createDate BETWEEN #{basic.beginTime} AND #{basic.endTime}
+			</if>
+			<if test="cmd.no!=null and cmd.no!=''">
+				AND cmd.no = #{cmd.no}
+			</if>
+			<if test="cmd.orderNo!=null and cmd.orderNo!=''">
+				AND cmd.orderNo = #{cmd.orderNo}
+			</if>
+			<if test="cmd.payerAccountNo!=null and cmd.payerAccountNo!=''">
+				AND cmd.payerAccountNo = #{cmd.payerAccountNo}
+			</if>
+			<if test="cmd.payeeAccountNo!=null and cmd.payeeAccountNo!=''">
+				AND cmd.payeeAccountNo = #{cmd.payeeAccountNo}
+			</if>
+			<if test="cmd.state!=null">
+				AND cmd.state = #{cmd.state}
+			</if>
+			<if test="cmd.accountingType!=null">
+				AND cmd.accountingType = #{cmd.accountingType}
+			</if>
+			<if test="cmd.type!=null">
+				AND cmd.type = #{cmd.type}
+			</if>
+			<if test="cmd.remark!=null and cmd.remark!=''">
+				AND cmd.remark like CONCAT('%', #{cmd.remark}, '%')
+			</if>
+		</where>
+	
+	</sql>
+	
+	<!-- 
+		资金指令综合查询
+		@author zyf
+	 -->
+	<select id="countFind" resultType="int">
+		
+		SELECT count(*) 
+		FROM funds_command cmd
+		<include refid="anyFindWhere"></include>		
+	</select>
+
+	<!-- 
+		资金指令综合查询
+		@author zyf
+	 -->
+	<select id="find" resultType="FundsCommand">
+		
+		SELECT * 
+		FROM funds_command cmd
+		<include refid="anyFindWhere"></include>
+		ORDER BY id desc
+		
+		<if test="basic.export==false">	<!-- 针对导出不加分页 -->
+		LIMIT #{basic.firstResult}, #{basic.maxResults}
+		</if>
+		
+	</select>
+
+</mapper>

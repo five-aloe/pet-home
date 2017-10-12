@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.zhonglian</groupId>
+	<artifactId>fuxi</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>fuxi</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+		<java.encoding>UTF-8</java.encoding>
+		<spring.framework.version>4.3.10.RELEASE</spring.framework.version>
+		<spring.mobile.device>1.1.5.RELEASE</spring.mobile.device>
+		<mongodb.version>3.4.2</mongodb.version>
+		<spring.mongodb.versoin>1.7.0.RELEASE</spring.mongodb.versoin>
+		<spring.boot.version>1.5.6.RELEASE</spring.boot.version>
+		<alibaba.druid>1.0.13</alibaba.druid>
+		<freemarker.version>2.3.22</freemarker.version>
+		<slf4j.version>1.7.12</slf4j.version>
+		<spring.redis.version>1.5.0.RELEASE</spring.redis.version>
+		<redis.version>2.6.3</redis.version>
+		<support.version>1.1.18.4-SNAPSHOT</support.version>
+		<payment.version>1.1.17-SNAPSHOT</payment.version>
+		<weixin.version>1.1.1-SNAPSHOT</weixin.version>
+		<bankplus.common.version>1.1.18.1-SNAPSHOT</bankplus.common.version>
+		<mando.version>1.1.18.4-SNAPSHOT</mando.version>
+
+	</properties>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.6.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<modules>
+		<module>douxin-common</module>
+		<module>fuxi-web</module>
+	    <module>fuxi-dal</module>
+	    <module>fuxi-biz</module>
+    <module>fuxi-common</module>
+  </modules>
+
+
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>zhognlian nexus</name>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<url>http://115.231.109.246:8082/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>nexus</id>
+			<name>Nexus</name>
+			<url>http://115.231.109.246:8082/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>http://115.231.109.246:8082/nexus/content/repositories/releases/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>snapshots</id>
+			<url>http://115.231.109.246:8082/nexus/content/repositories/snapshots/</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>douxin-common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>fuxi-dal</artifactId>	
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>fuxi-biz</artifactId>	
+				<version>${project.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>fuxi-web</artifactId>	
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>mando-rule</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.zhonglian</groupId>
+						<artifactId>mando-support</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>mando-support</artifactId>
+				<version>${support.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>slf4j-api</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>spring-beans</artifactId>
+						<groupId>org.springframework</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>spring-webmvc</artifactId>
+						<groupId>org.springframework</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>spring-test</artifactId>
+						<groupId>org.springframework</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>mando-service-api</artifactId>
+				<version>${mando.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.zhonglian</groupId>
+						<artifactId>mando-support</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+			<dependency>
+				<groupId>com.zhonglian</groupId>
+				<artifactId>mando-test</artifactId>
+				<version>1.0.2-SNAPSHOT</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-activemq</artifactId>
+				<version>${spring.boot.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-zookeeper-config</artifactId>
+				<version>1.1.1.RELEASE</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mybatis.spring.boot</groupId>
+				<artifactId>mybatis-spring-boot-starter</artifactId>
+				<version>1.3.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<version>${spring.boot.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.10.19</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jms</artifactId>
+				<version>${spring.framework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.mobile</groupId>
+				<artifactId>spring-mobile-device</artifactId>
+				<version>${spring.mobile.device}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.35</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.mail</groupId>
+				<artifactId>mail</artifactId>
+				<version>1.4.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.octo.captcha</groupId>
+				<artifactId>jcaptcha</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${freemarker.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-mongodb-cross-store</artifactId>
+				<version>${spring.mongodb.versoin}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-mongodb-log4j</artifactId>
+				<version>${spring.mongodb.versoin}</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid</artifactId>
+				<version>${alibaba.druid}</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<version>${mongodb.version}</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google</groupId>
+				<artifactId>kaptcha</artifactId>
+				<version>2.3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.octo.captcha</groupId>
+				<artifactId>jcaptcha</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+
+			<!-- SERVLET API -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>dubbo</artifactId>
+				<version>2.5.3</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>spring</artifactId>
+						<groupId>org.springframework</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>3.4.10</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>com.github.sgroschupf</groupId>
+				<artifactId>zkclient</artifactId>
+				<version>0.1</version>
+				<exclusions>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+
+		</dependencies>
+	</dependencyManagement>
+</project>

@@ -1,0 +1,18 @@
+/**
+ * 
+ */
+package com.zhonglian.fuxi.service;
+
+import com.zhonglian.douxin.common.entity.SysUser;
+
+/**
+ * 系统用户服务
+ * 
+ * @author zyf
+ *
+ */
+public interface SysUserService {
+
+	public SysUser findByUsername(String username);
+	
+}
